@@ -22,5 +22,5 @@ import (
 
 // Save saves image to dest, as in `docker save`
 func Save(image, dest string) error {
-	return exec.Command("docker", "save", "-o", dest, image).Run()
+	return exec.Command("docker", "save", "-o", dest, image).Run(false)
 }

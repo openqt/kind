@@ -54,7 +54,7 @@ func pullIfNotPresent(logger log.Logger, image string, retries int) (pulled bool
 	// once we have configurable log levels
 	// if this did not return an error, then the image exists locally
 	cmd := exec.Command("docker", "inspect", "--type=image", image)
-	if err := cmd.Run(); err == nil {
+	if err := cmd.Run(false); err == nil {
 		logger.V(1).Infof("Image: %s present locally", image)
 		return false, nil
 	}
@@ -65,14 +65,14 @@ func pullIfNotPresent(logger log.Logger, image string, retries int) (pulled bool
 // pull pulls an image, retrying up to retries times
 func pull(logger log.Logger, image string, retries int) error {
 	logger.V(1).Infof("Pulling image: %s ...", image)
-	err := exec.Command("docker", "pull", image).Run()
+	err := exec.Command("docker", "pull", image).Run(false)
 	// retry pulling up to retries times if necessary
 	if err != nil {
 		for i := 0; i < retries; i++ {
 			time.Sleep(time.Second * time.Duration(i+1))
 			logger.V(1).Infof("Trying again to pull image: %q ... %v", image, err)
 			// TODO(bentheelder): add some backoff / sleep?
-			err = exec.Command("docker", "pull", image).Run()
+			err = exec.Command("docker", "pull", image).Run(false)
 			if err == nil {
 				break
 			}

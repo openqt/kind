@@ -157,7 +157,7 @@ func createNetwork(name, ipv6Subnet string, mtu int) error {
 		args = append(args, "--ipv6", "--subnet", ipv6Subnet)
 	}
 	args = append(args, name)
-	return exec.Command("docker", args...).Run()
+	return exec.Command("docker", args...).Run(false)
 }
 
 // getDefaultNetworkMTU obtains the MTU from the docker default network
@@ -315,7 +315,7 @@ func isOnlyErrorNoSuchNetwork(err error) bool {
 }
 
 func deleteNetworks(networks ...string) error {
-	return exec.Command("docker", append([]string{"network", "rm"}, networks...)...).Run()
+	return exec.Command("docker", append([]string{"network", "rm"}, networks...)...).Run(false)
 }
 
 // generateULASubnetFromName generate an IPv6 subnet based on the

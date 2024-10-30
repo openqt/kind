@@ -28,5 +28,5 @@ func Run(image string, runArgs []string, containerArgs []string) error {
 	args = append(args, image)
 	args = append(args, containerArgs...)
 	cmd := exec.Command("docker", args...)
-	return cmd.Run()
+	return cmd.Run(false)
 }

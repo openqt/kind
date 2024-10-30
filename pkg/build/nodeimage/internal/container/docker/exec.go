@@ -18,7 +18,9 @@ package docker
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"strings"
 
 	"sigs.k8s.io/kind/pkg/exec"
 )
@@ -64,7 +66,12 @@ type containerCmd struct {
 	ctx      context.Context
 }
 
-func (c *containerCmd) Run() error {
+func (c *containerCmd) Run(dryRun bool) error {
+	fmt.Println(c.String())
+	if dryRun {
+		return nil
+	}
+
 	args := []string{
 		"exec",
 		// run with privileges so we can remount etc..
@@ -108,7 +115,7 @@ func (c *containerCmd) Run() error {
 	if c.stdout != nil {
 		cmd.SetStdout(c.stdout)
 	}
-	return cmd.Run()
+	return cmd.Run(dryRun)
 }
 
 func (c *containerCmd) SetEnv(env ...string) exec.Cmd {
@@ -129,4 +136,8 @@ func (c *containerCmd) SetStdout(w io.Writer) exec.Cmd {
 func (c *containerCmd) SetStderr(w io.Writer) exec.Cmd {
 	c.stderr = w
 	return c
+}
+
+func (c *containerCmd) String() string {
+	return fmt.Sprintf(">>> %s %s", "", strings.Join(append([]string{c.command}, c.args...), " "))
 }

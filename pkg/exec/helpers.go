@@ -64,7 +64,7 @@ func CombinedOutputLines(cmd Cmd) (lines []string, err error) {
 	var buff bytes.Buffer
 	cmd.SetStdout(&buff)
 	cmd.SetStderr(&buff)
-	err = cmd.Run()
+	err = cmd.Run(false)
 	scanner := bufio.NewScanner(&buff)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
@@ -78,7 +78,7 @@ func CombinedOutputLines(cmd Cmd) (lines []string, err error) {
 func OutputLines(cmd Cmd) (lines []string, err error) {
 	var buff bytes.Buffer
 	cmd.SetStdout(&buff)
-	err = cmd.Run()
+	err = cmd.Run(false)
 	scanner := bufio.NewScanner(&buff)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
@@ -90,7 +90,7 @@ func OutputLines(cmd Cmd) (lines []string, err error) {
 func Output(cmd Cmd) ([]byte, error) {
 	var buff bytes.Buffer
 	cmd.SetStdout(&buff)
-	err := cmd.Run()
+	err := cmd.Run(false)
 	return buff.Bytes(), err
 }
 
@@ -116,7 +116,7 @@ func RunWithStdoutReader(cmd Cmd, readerFunc func(io.Reader) error) error {
 		},
 		func() error {
 			defer pw.Close()
-			return cmd.Run()
+			return cmd.Run(false)
 		},
 	})
 }
@@ -136,7 +136,7 @@ func RunWithStdinWriter(cmd Cmd, writerFunc func(io.Writer) error) error {
 		},
 		func() error {
 			defer pr.Close()
-			return cmd.Run()
+			return cmd.Run(false)
 		},
 	})
 }

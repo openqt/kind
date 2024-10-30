@@ -62,7 +62,7 @@ func WaitUntilLogRegexpMatches(logCtx context.Context, logCmd exec.Cmd, re *rege
 	cmdErrC := make(chan error, 1)
 	go func() {
 		defer pw.Close()
-		cmdErrC <- logCmd.Run()
+		cmdErrC <- logCmd.Run(false)
 	}()
 
 	sc := bufio.NewScanner(pr)

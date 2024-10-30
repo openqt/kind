@@ -373,11 +373,11 @@ func generatePortMappings(clusterIPFamily config.ClusterIPFamily, portMappings .
 }
 
 func createContainer(name string, args []string, binaryName string) error {
-	return exec.Command(binaryName, append([]string{"run", "--name", name}, args...)...).Run()
+	return exec.Command(binaryName, append([]string{"run", "--name", name}, args...)...).Run(false)
 }
 
 func createContainerWithWaitUntilSystemdReachesMultiUserSystem(name string, args []string, binaryName string) error {
-	if err := exec.Command(binaryName, append([]string{"run", "--name", name}, args...)...).Run(); err != nil {
+	if err := exec.Command(binaryName, append([]string{"run", "--name", name}, args...)...).Run(false); err != nil {
 		return err
 	}
 

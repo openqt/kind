@@ -32,6 +32,7 @@ type flagpole struct {
 	BaseImage string
 	KubeRoot  string
 	Arch      string
+	DryRun    bool
 }
 
 // NewCommand returns a new cobra.Command for building the node image
@@ -83,6 +84,12 @@ func NewCommand(logger log.Logger, streams cmd.IOStreams) *cobra.Command {
 		"",
 		"architecture to build for, defaults to the host architecture",
 	)
+	cmd.Flags().BoolVar(
+		&flags.DryRun,
+		"dry-run",
+		false,
+		"print the Dockerfile that would be used to build the image",
+	)
 	return cmd
 }
 
@@ -98,6 +105,7 @@ func runE(logger log.Logger, flags *flagpole, args []string) error {
 		nodeimage.WithLogger(logger),
 		nodeimage.WithArch(flags.Arch),
 		nodeimage.WithBuildType(flags.BuildType),
+		nodeimage.WithDryRun(flags.DryRun),
 	); err != nil {
 		return errors.Wrap(err, "error building node image")
 	}

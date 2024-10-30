@@ -57,7 +57,7 @@ func (a *action) Execute(ctx *actions.ActionContext) error {
 
 	// read the manifest from the node
 	var raw bytes.Buffer
-	if err := node.Command("cat", "/kind/manifests/default-cni.yaml").SetStdout(&raw).Run(); err != nil {
+	if err := node.Command("cat", "/kind/manifests/default-cni.yaml").SetStdout(&raw).Run(false); err != nil {
 		return errors.Wrap(err, "failed to read CNI manifest")
 	}
 	manifest := raw.String()
@@ -124,7 +124,7 @@ func (a *action) Execute(ctx *actions.ActionContext) error {
 	if err := node.Command(
 		"kubectl", "create", "--kubeconfig=/etc/kubernetes/admin.conf",
 		"-f", "-",
-	).SetStdin(strings.NewReader(manifest)).Run(); err != nil {
+	).SetStdin(strings.NewReader(manifest)).Run(false); err != nil {
 		return errors.Wrap(err, "failed to apply overlay network")
 	}
 

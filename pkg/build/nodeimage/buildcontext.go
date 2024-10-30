@@ -53,6 +53,7 @@ type buildContext struct {
 	arch      string
 	buildType string
 	kubeParam string
+	dryRun    bool
 	// non-option fields
 	builder kube.Builder
 }
@@ -87,7 +88,7 @@ func (c *buildContext) buildImage(bits kube.Bits) error {
 	// ensure we will delete it
 	if containerID != "" {
 		defer func() {
-			_ = exec.Command("docker", "rm", "-f", "-v", containerID).Run()
+			_ = exec.Command("docker", "rm", "-f", "-v", containerID).Run(false)
 		}()
 	}
 	if err != nil {
@@ -102,13 +103,13 @@ func (c *buildContext) buildImage(bits kube.Bits) error {
 		// TODO: probably should be /usr/local/bin, but the existing kubelet
 		// service file expects /usr/bin/kubelet
 		nodePath := "/usr/bin/" + path.Base(binary)
-		if err := exec.Command("docker", "cp", binary, containerID+":"+nodePath).Run(); err != nil {
+		if err := exec.Command("docker", "cp", binary, containerID+":"+nodePath).Run(false); err != nil {
 			return err
 		}
-		if err := cmder.Command("chmod", "+x", nodePath).Run(); err != nil {
+		if err := cmder.Command("chmod", "+x", nodePath).Run(false); err != nil {
 			return err
 		}
-		if err := cmder.Command("chown", "root:root", nodePath).Run(); err != nil {
+		if err := cmder.Command("chown", "root:root", nodePath).Run(false); err != nil {
 			return err
 		}
 	}
@@ -141,7 +142,7 @@ func (c *buildContext) buildImage(bits kube.Bits) error {
 		// and should not be carried with the built image
 		"--change", `ENV HTTP_PROXY="" HTTPS_PROXY="" NO_PROXY=""`,
 		containerID, c.image,
-	).Run(); err != nil {
+	).Run(false); err != nil {
 		c.logger.Errorf("Image build Failed! Failed to save image: %v", err)
 		return err
 	}
@@ -294,7 +295,7 @@ func (c *buildContext) prePullImagesAndWriteManifests(bits kube.Bits, parsedVers
 				return err
 			}
 			defer f.Close()
-			return importer.LoadCommand().SetStdout(os.Stdout).SetStderr(os.Stderr).SetStdin(f).Run()
+			return importer.LoadCommand().SetStdout(os.Stdout).SetStderr(os.Stderr).SetStdin(f).Run(false)
 			// we will rewrite / correct the tags in tagFns below
 		})
 	}

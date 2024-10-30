@@ -148,7 +148,7 @@ func (p *provider) DeleteNodes(n []nodes.Node) error {
 	for _, node := range n {
 		args = append(args, node.String())
 	}
-	if err := exec.Command(command, args...).Run(); err != nil {
+	if err := exec.Command(command, args...).Run(false); err != nil {
 		return errors.Wrap(err, "failed to delete nodes")
 	}
 	return nil
@@ -243,7 +243,7 @@ func (p *provider) CollectLogs(dir string, nodes []nodes.Node) error {
 				return err
 			}
 			defer f.Close()
-			return cmd.SetStdout(f).SetStderr(f).Run()
+			return cmd.SetStdout(f).SetStderr(f).Run(false)
 		}
 	}
 	// construct a slice of methods to collect logs

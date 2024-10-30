@@ -82,7 +82,7 @@ func addDefaultStorage(logger log.Logger, controlPlane nodes.Node) error {
 	// storage manifest if present
 	manifest := defaultStorageManifest
 	var raw bytes.Buffer
-	if err := controlPlane.Command("cat", "/kind/manifests/default-storage.yaml").SetStdout(&raw).Run(); err != nil {
+	if err := controlPlane.Command("cat", "/kind/manifests/default-storage.yaml").SetStdout(&raw).Run(false); err != nil {
 		logger.Warn("Could not read storage manifest, falling back on old k8s.io/host-path default ...")
 	} else {
 		manifest = raw.String()
@@ -95,5 +95,5 @@ func addDefaultStorage(logger log.Logger, controlPlane nodes.Node) error {
 		"--kubeconfig=/etc/kubernetes/admin.conf", "apply", "-f", "-",
 	)
 	cmd.SetStdin(in)
-	return cmd.Run()
+	return cmd.Run(false)
 }

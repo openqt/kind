@@ -26,12 +26,13 @@ import (
 type Cmd interface {
 	// Run executes the command (like os/exec.Cmd.Run), it should return
 	// a *RunError if there is any error
-	Run() error
+	Run(bool) error
 	// Each entry should be of the form "key=value"
 	SetEnv(...string) Cmd
 	SetStdin(io.Reader) Cmd
 	SetStdout(io.Writer) Cmd
 	SetStderr(io.Writer) Cmd
+	String() string
 }
 
 // Cmder abstracts over creating commands

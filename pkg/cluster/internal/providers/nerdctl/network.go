@@ -127,7 +127,7 @@ func createNetwork(name, ipv6Subnet string, mtu int, binaryName string) error {
 		args = append(args, "--ipv6", "--subnet", ipv6Subnet)
 	}
 	args = append(args, name)
-	return exec.Command(binaryName, args...).Run()
+	return exec.Command(binaryName, args...).Run(false)
 }
 
 // getDefaultNetworkMTU obtains the MTU from the docker default network

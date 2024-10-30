@@ -86,7 +86,7 @@ func get(p providers.Provider, name string, external bool) (*kubeconfig.Config, 
 	node := nodes[0]
 
 	// grab kubeconfig version from the node
-	if err := node.Command("cat", "/etc/kubernetes/admin.conf").SetStdout(&buff).Run(); err != nil {
+	if err := node.Command("cat", "/etc/kubernetes/admin.conf").SetStdout(&buff).Run(false); err != nil {
 		return nil, errors.Wrap(err, "failed to get cluster internal kubeconfig")
 	}
 

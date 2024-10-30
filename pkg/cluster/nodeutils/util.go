@@ -47,18 +47,18 @@ func KubeVersion(n nodes.Node) (version string, err error) {
 // WriteFile writes content to dest on the node
 func WriteFile(n nodes.Node, dest, content string) error {
 	// create destination directory
-	err := n.Command("mkdir", "-p", path.Dir(dest)).Run()
+	err := n.Command("mkdir", "-p", path.Dir(dest)).Run(false)
 	if err != nil {
 		return errors.Wrapf(err, "failed to create directory %s", path.Dir(dest))
 	}
 
-	return n.Command("cp", "/dev/stdin", dest).SetStdin(strings.NewReader(content)).Run()
+	return n.Command("cp", "/dev/stdin", dest).SetStdin(strings.NewReader(content)).Run(false)
 }
 
 // CopyNodeToNode copies file from a to b
 func CopyNodeToNode(a, b nodes.Node, file string) error {
 	// create destination directory
-	err := b.Command("mkdir", "-p", path.Dir(file)).Run()
+	err := b.Command("mkdir", "-p", path.Dir(file)).Run(false)
 	if err != nil {
 		return errors.Wrapf(err, "failed to create directory %q", path.Dir(file))
 	}
@@ -66,10 +66,10 @@ func CopyNodeToNode(a, b nodes.Node, file string) error {
 	// TODO: experiment with streaming instead to avoid the copy
 	// for now we only use this for small files so it's not worth the complexity
 	var buff bytes.Buffer
-	if err := a.Command("cat", file).SetStdout(&buff).Run(); err != nil {
+	if err := a.Command("cat", file).SetStdout(&buff).Run(false); err != nil {
 		return errors.Wrapf(err, "failed to read %q from node", file)
 	}
-	if err := b.Command("cp", "/dev/stdin", file).SetStdin(&buff).Run(); err != nil {
+	if err := b.Command("cp", "/dev/stdin", file).SetStdin(&buff).Run(false); err != nil {
 		return errors.Wrapf(err, "failed to write %q to node", file)
 	}
 
@@ -83,7 +83,7 @@ func LoadImageArchive(n nodes.Node, image io.Reader) error {
 		return err
 	}
 	cmd := n.Command("ctr", "--namespace=k8s.io", "images", "import", "--all-platforms", "--digests", "--snapshotter="+snapshotter, "-").SetStdin(image)
-	if err := cmd.Run(); err != nil {
+	if err := cmd.Run(false); err != nil {
 		return errors.Wrap(err, "failed to load image")
 	}
 	return nil
@@ -112,7 +112,7 @@ func parseSnapshotter(config string) (string, error) {
 // ImageID returns ID of image on the node with the given image name if present
 func ImageID(n nodes.Node, image string) (string, error) {
 	var out bytes.Buffer
-	if err := n.Command("crictl", "inspecti", image).SetStdout(&out).Run(); err != nil {
+	if err := n.Command("crictl", "inspecti", image).SetStdout(&out).Run(false); err != nil {
 		return "", err
 	}
 	// we only care about the image ID
@@ -132,7 +132,7 @@ func ImageID(n nodes.Node, image string) (string, error) {
 func ImageTags(n nodes.Node, imageID string) (map[string]bool, error) {
 	var out bytes.Buffer
 	tags := make(map[string]bool, 0)
-	if err := n.Command("crictl", "inspecti", imageID).SetStdout(&out).Run(); err != nil {
+	if err := n.Command("crictl", "inspecti", imageID).SetStdout(&out).Run(false); err != nil {
 		return tags, err
 	}
 	crictlOut := struct {
@@ -152,5 +152,5 @@ func ImageTags(n nodes.Node, imageID string) (map[string]bool, error) {
 // ReTagImage is used to tag an ImageID with a custom tag specified by imageName parameter
 func ReTagImage(n nodes.Node, imageID, imageName string) error {
 	var out bytes.Buffer
-	return n.Command("ctr", "--namespace=k8s.io", "images", "tag", "--force", imageID, imageName).SetStdout(&out).Run()
+	return n.Command("ctr", "--namespace=k8s.io", "images", "tag", "--force", imageID, imageName).SetStdout(&out).Run(false)
 }

@@ -17,6 +17,7 @@ limitations under the License.
 package kube
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -108,8 +109,10 @@ func (b *dockerBuilder) Build() (Bits, error) {
 			makeVars...,
 		)...,
 	).SetEnv(env...)
+	fmt.Println(cmd.String())
+
 	exec.InheritOutput(cmd)
-	if err := cmd.Run(); err != nil {
+	if err := cmd.Run(false); err != nil {
 		return nil, errors.Wrap(err, "failed to build images")
 	}
 
@@ -129,7 +132,7 @@ func (b *dockerBuilder) Build() (Bits, error) {
 			)...,
 		).SetEnv(env...)
 		exec.InheritOutput(cmd)
-		if err := cmd.Run(); err != nil {
+		if err := cmd.Run(false); err != nil {
 			return nil, errors.Wrap(err, "failed to build binaries")
 		}
 	}

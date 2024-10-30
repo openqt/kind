@@ -35,7 +35,7 @@ func newContainerdImporter(containerCmder exec.Cmder) *containerdImporter {
 func (c *containerdImporter) Prepare() error {
 	if err := c.containerCmder.Command(
 		"bash", "-c", "nohup containerd > /dev/null 2>&1 &",
-	).Run(); err != nil {
+	).Run(false); err != nil {
 		return err
 	}
 	// TODO(bentheelder): some healthcheck?
@@ -43,13 +43,13 @@ func (c *containerdImporter) Prepare() error {
 }
 
 func (c *containerdImporter) End() error {
-	return c.containerCmder.Command("pkill", "containerd").Run()
+	return c.containerCmder.Command("pkill", "containerd").Run(false)
 }
 
 func (c *containerdImporter) Pull(image, platform string) error {
 	return c.containerCmder.Command(
 		"ctr", "--namespace=k8s.io", "content", "fetch", "--platform="+platform, image,
-	).SetStdout(io.Discard).SetStderr(io.Discard).Run()
+	).SetStdout(io.Discard).SetStderr(io.Discard).Run(false)
 }
 
 func (c *containerdImporter) LoadCommand() exec.Cmd {
@@ -62,7 +62,7 @@ func (c *containerdImporter) LoadCommand() exec.Cmd {
 func (c *containerdImporter) Tag(src, target string) error {
 	return c.containerCmder.Command(
 		"ctr", "--namespace=k8s.io", "images", "tag", "--force", src, target,
-	).Run()
+	).Run(false)
 }
 
 func (c *containerdImporter) ListImported() ([]string, error) {

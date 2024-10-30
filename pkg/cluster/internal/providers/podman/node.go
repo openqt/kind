@@ -99,7 +99,11 @@ type nodeCmd struct {
 	ctx      context.Context
 }
 
-func (c *nodeCmd) Run() error {
+func (c *nodeCmd) Run(dryRun bool) error {
+	fmt.Println(c.String())
+	if dryRun {
+		return nil
+	}
 	args := []string{
 		"exec",
 		// run with privileges so we can remount etc..
@@ -143,7 +147,7 @@ func (c *nodeCmd) Run() error {
 	if c.stdout != nil {
 		cmd.SetStdout(c.stdout)
 	}
-	return cmd.Run()
+	return cmd.Run(false)
 }
 
 func (c *nodeCmd) SetEnv(env ...string) exec.Cmd {
@@ -167,5 +171,9 @@ func (c *nodeCmd) SetStderr(w io.Writer) exec.Cmd {
 }
 
 func (n *node) SerialLogs(w io.Writer) error {
-	return exec.Command("podman", "logs", n.name).SetStdout(w).SetStderr(w).Run()
+	return exec.Command("podman", "logs", n.name).SetStdout(w).SetStderr(w).Run(false)
+}
+
+func (c *nodeCmd) String() string {
+	return fmt.Sprintf(">>> %s %s", "podman", strings.Join(append([]string{c.command}, c.args...), " "))
 }

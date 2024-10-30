@@ -208,7 +208,7 @@ func loadImage(imageTarName string, node nodes.Node) error {
 // save saves images to dest, as in `docker save`
 func save(images []string, dest string) error {
 	commandArgs := append([]string{"save", "-o", dest}, images...)
-	return exec.Command("docker", commandArgs...).Run()
+	return exec.Command("docker", commandArgs...).Run(false)
 }
 
 // imageID return the Id of the container image

@@ -403,11 +403,11 @@ func generatePortMappings(clusterIPFamily config.ClusterIPFamily, portMappings .
 }
 
 func createContainer(name string, args []string) error {
-	return exec.Command("docker", append([]string{"run", "--name", name}, args...)...).Run()
+	return exec.Command("docker", append([]string{"run", "--name", name}, args...)...).Run(false)
 }
 
 func createContainerWithWaitUntilSystemdReachesMultiUserSystem(name string, args []string) error {
-	if err := exec.Command("docker", append([]string{"run", "--name", name}, args...)...).Run(); err != nil {
+	if err := exec.Command("docker", append([]string{"run", "--name", name}, args...)...).Run(false); err != nil {
 		return err
 	}
 

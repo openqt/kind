@@ -151,7 +151,7 @@ func (a *action) Execute(ctx *actions.ActionContext) error {
 
 		if err := node.Command(
 			"kubectl", taintArgs...,
-		).Run(); err != nil {
+		).Run(false); err != nil {
 			return errors.Wrap(err, "failed to remove control plane taint")
 		}
 	}
@@ -162,7 +162,7 @@ func (a *action) Execute(ctx *actions.ActionContext) error {
 		labelArgs := []string{"--kubeconfig=/etc/kubernetes/admin.conf", "label", "nodes", "--all", "node.kubernetes.io/exclude-from-external-load-balancers-"}
 		if err := node.Command(
 			"kubectl", labelArgs...,
-		).Run(); err != nil {
+		).Run(false); err != nil {
 			return errors.Wrap(err, "failed to remove control plane load balancer label")
 		}
 	}

@@ -118,7 +118,7 @@ func deleteVolumes(names []string) error {
 	}
 	args = append(args, names...)
 	cmd := exec.Command("podman", args...)
-	return cmd.Run()
+	return cmd.Run(false)
 }
 
 // mountDevMapper checks if the podman storage driver is Btrfs or ZFS

@@ -186,16 +186,16 @@ func (p *provider) DeleteNodes(n []nodes.Node) error {
 		argsWait = append(argsWait, node.String())
 		argsNoRestart = append(argsNoRestart, node.String())
 	}
-	if err := exec.Command(p.Binary(), argsNoRestart...).Run(); err != nil {
+	if err := exec.Command(p.Binary(), argsNoRestart...).Run(false); err != nil {
 		return errors.Wrap(err, "failed to update restart policy to 'no'")
 	}
-	if err := exec.Command(p.Binary(), argsStop...).Run(); err != nil {
+	if err := exec.Command(p.Binary(), argsStop...).Run(false); err != nil {
 		return errors.Wrap(err, "failed to stop nodes")
 	}
-	if err := exec.Command(p.Binary(), argsWait...).Run(); err != nil {
+	if err := exec.Command(p.Binary(), argsWait...).Run(false); err != nil {
 		return errors.Wrap(err, "failed to wait for node exit")
 	}
-	if err := exec.Command(p.Binary(), argsRm...).Run(); err != nil {
+	if err := exec.Command(p.Binary(), argsRm...).Run(false); err != nil {
 		return errors.Wrap(err, "failed to delete nodes")
 	}
 	return nil
@@ -291,7 +291,7 @@ func (p *provider) CollectLogs(dir string, nodes []nodes.Node) error {
 				return err
 			}
 			defer f.Close()
-			return cmd.SetStdout(f).SetStderr(f).Run()
+			return cmd.SetStdout(f).SetStderr(f).Run(false)
 		}
 	}
 	// construct a slice of methods to collect logs

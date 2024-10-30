@@ -42,7 +42,7 @@ func configureContainerdSystemdCgroupFalse(containerCmdr exec.Cmder, config stri
 	}
 	err = containerCmdr.Command(
 		"cp", "/dev/stdin", containerdConfigPath,
-	).SetStdin(strings.NewReader(patched)).Run()
+	).SetStdin(strings.NewReader(patched)).Run(false)
 	if err != nil {
 		return errors.Wrap(err, "failed to configure containerd SystemdCgroup=false")
 	}

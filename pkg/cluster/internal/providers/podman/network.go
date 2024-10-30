@@ -88,10 +88,10 @@ func ensureNetwork(name string) error {
 
 func createNetwork(name, ipv6Subnet string) error {
 	if ipv6Subnet == "" {
-		return exec.Command("podman", "network", "create", "-d=bridge", name).Run()
+		return exec.Command("podman", "network", "create", "-d=bridge", name).Run(false)
 	}
 	return exec.Command("podman", "network", "create", "-d=bridge",
-		"--ipv6", "--subnet", ipv6Subnet, name).Run()
+		"--ipv6", "--subnet", ipv6Subnet, name).Run(false)
 }
 
 func checkIfNetworkExists(name string) bool {

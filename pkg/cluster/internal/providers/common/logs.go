@@ -19,7 +19,7 @@ func CollectLogs(n nodes.Node, dir string) error {
 				return err
 			}
 			defer f.Close()
-			return cmd.SetStdout(f).SetStderr(f).Run()
+			return cmd.SetStdout(f).SetStderr(f).Run(false)
 		}
 	}
 

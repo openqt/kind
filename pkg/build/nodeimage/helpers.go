@@ -31,7 +31,7 @@ func createFile(containerCmder exec.Cmder, filePath, contents string) error {
 	// NOTE: the paths inside the container should use the path package
 	// and not filepath (!), we want posixy paths in the linux container, NOT
 	// whatever path format the host uses. For paths on the host we use filepath
-	if err := containerCmder.Command("mkdir", "-p", path.Dir(filePath)).Run(); err != nil {
+	if err := containerCmder.Command("mkdir", "-p", path.Dir(filePath)).Run(false); err != nil {
 		return err
 	}
 
@@ -39,7 +39,7 @@ func createFile(containerCmder exec.Cmder, filePath, contents string) error {
 		"cp", "/dev/stdin", filePath,
 	).SetStdin(
 		strings.NewReader(contents),
-	).Run()
+	).Run(false)
 }
 
 func findSandboxImage(config string) (string, error) {

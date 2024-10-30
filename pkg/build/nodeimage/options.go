@@ -82,3 +82,11 @@ func WithBuildType(buildType string) Option {
 		return nil
 	})
 }
+
+// WithDryRun configures a build to print the Dockerfile that would be used to build the image
+func WithDryRun(dryRun bool) Option {
+	return optionAdapter(func(b *buildContext) error {
+		b.dryRun = dryRun
+		return nil
+	})
+}

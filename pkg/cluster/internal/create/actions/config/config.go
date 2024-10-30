@@ -124,7 +124,7 @@ func (a *Action) Execute(ctx *actions.ActionContext) error {
 				// read and patch the config
 				const containerdConfigPath = "/etc/containerd/config.toml"
 				var buff bytes.Buffer
-				if err := node.Command("cat", containerdConfigPath).SetStdout(&buff).Run(); err != nil {
+				if err := node.Command("cat", containerdConfigPath).SetStdout(&buff).Run(false); err != nil {
 					return errors.Wrap(err, "failed to read containerd config from node")
 				}
 				patched, err := patch.TOML(buff.String(), ctx.Config.ContainerdConfigPatches, ctx.Config.ContainerdConfigPatchesJSON6902)
@@ -136,7 +136,7 @@ func (a *Action) Execute(ctx *actions.ActionContext) error {
 				}
 				// restart containerd now that we've re-configured it
 				// skip if containerd is not running
-				if err := node.Command("bash", "-c", `! pgrep --exact containerd || systemctl restart containerd`).Run(); err != nil {
+				if err := node.Command("bash", "-c", `! pgrep --exact containerd || systemctl restart containerd`).Run(false); err != nil {
 					return errors.Wrap(err, "failed to restart containerd after patching config")
 				}
 				return nil
