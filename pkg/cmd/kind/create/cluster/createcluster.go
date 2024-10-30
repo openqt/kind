@@ -18,11 +18,14 @@ limitations under the License.
 package cluster
 
 import (
+	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 
+	"sigs.k8s.io/kind/pkg/build/nodeimage"
 	"sigs.k8s.io/kind/pkg/cluster"
 	"sigs.k8s.io/kind/pkg/cmd"
 	"sigs.k8s.io/kind/pkg/errors"
@@ -39,6 +42,7 @@ type flagpole struct {
 	Retain     bool
 	Wait       time.Duration
 	Kubeconfig string
+	Version    string
 }
 
 // NewCommand returns a new cobra.Command for cluster creation
@@ -91,6 +95,13 @@ func NewCommand(logger log.Logger, streams cmd.IOStreams) *cobra.Command {
 		"",
 		"sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config",
 	)
+	cmd.Flags().StringVarP(
+		&flags.Version,
+		"k8s-version",
+		"k",
+		"",
+		"sets the Kubernetes version to use for the cluster",
+	)
 	return cmd
 }
 
@@ -104,6 +115,17 @@ func runE(logger log.Logger, streams cmd.IOStreams, flags *flagpole) error {
 	withConfig, err := configOption(flags.Config, streams.In)
 	if err != nil {
 		return err
+	}
+
+	if len(flags.Version) > 0 {
+		if image, found := strings.CutSuffix(nodeimage.DefaultImage, ":latest"); found {
+			version := flags.Version
+			if !strings.HasPrefix(version, "v") {
+				version = "v" + flags.Version
+			}
+			flags.ImageName = image + ":" + version
+		}
+		fmt.Printf("Using image %s\n", flags.ImageName)
 	}
 
 	// create the cluster
